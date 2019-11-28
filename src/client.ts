@@ -1,7 +1,7 @@
 import { IService } from "./service";
 import { ITransportValue, ITransport, IClientTransportClass } from "./interface";
-import { HTTPTransport, HttpClient } from "./Transports";
-import { IProtocol, JSONProtocol } from "./Protocol";
+import { HTTPTransport, HttpClient } from "./transports";
+import { IProtocol, JSONProtocol } from "./protocol";
 
 interface IClients {
     callMethod(method: string, argv: any[]): Promise<any>

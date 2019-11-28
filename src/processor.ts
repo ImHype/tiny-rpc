@@ -1,4 +1,4 @@
-import { IProtocol } from "./Protocol";
+import { IProtocol } from "./protocol";
 import { IServerIMPL } from "./interface";
 
 export interface IProcesser {
