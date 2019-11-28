@@ -5,6 +5,7 @@ async function main() {
     const server = createServer(service, {
         impl: {
             sayHello(helloRequest: any) {
+                console.log('helloRequest:', helloRequest)
                 return {
                     status: '200'
                 }
