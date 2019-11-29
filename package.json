@@ -1,5 +1,10 @@
 {
-  "name": "byte-rpc",
+  "name": "tiny-rpc",
+  "description": "tiny rpc",
+  "author": {
+    "name": "imhype",
+    "url": "https://github.com/ImHype/tiny-rpc"
+  },
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
