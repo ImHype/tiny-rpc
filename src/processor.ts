@@ -12,20 +12,27 @@ export class Processer implements IProcesser {
     }
 
     async process(t: IProtocol) {
-        const data = await t.decode();
-        const { method, body } = data;
+        const { name, seqid } = await t.readMessageBegin();
+        if (this.impl.has(name)) {
+            const handler = this.impl.get(name)!;
+            const data = await t.readMessageEnd();
+            const resp = await handler.handle(data);
 
-        if (this.impl.has(method)) {
-            const handler = this.impl.get(method)!;
-            const resp = await handler.handle(body);
-
-            return t.encode({
-                body: resp
+            await t.writeMessageBegin({
+                name,
+                seqid,
+                type: 'reply'
             });
+            return t.writeMessageEnd(resp);
         } else {
-            return t.encode({
-                exception: 'no method'
-            });            
+            t.writeMessageBegin({
+                name,
+                seqid,
+                type: 'exception'
+            });
+            return t.writeMessageEnd({
+                message: 'no method'
+            });
         }
     }
 }

@@ -7,7 +7,7 @@ export class Ready {
         this.isReady = false;
     }
 
-    wait() {
+    waitReady() {
         if (this.isReady) return;
         return new Promise((resolve) => {
             this.queue.push(resolve);

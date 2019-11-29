@@ -2,32 +2,30 @@ import http from 'http';
 import { IServerTransport, ITransport } from "./interface";
 import { Readable, Writable } from 'stream';
 import { Ready } from './helper';
+import { StreamReader } from './stream-reader';
+
 
 export class HTTPTransport implements ITransport {
-    private req: Readable;
-    private res: Writable;
+    private readable: Readable;
+    private writable: Writable;
+    private streamReader: StreamReader;
 
-    constructor(req: Readable, res: Writable) {
-        this.req = req;
-        this.res = res;
+    constructor(readable: Readable, writable: Writable) {
+        this.readable = readable;
+        this.writable = writable;
+        this.streamReader = new StreamReader(readable);
     }
 
-    async read() {
-        return new Promise((resolve) => {
-            let chunks: Buffer[] = [];
-
-            this.req.on('data', (c) => {
-                chunks.push(c);
-            });
-    
-            this.req.on('end', () => {
-                resolve(Buffer.concat(chunks));
-            });
-        })
+    async readAll() {
+        return this.streamReader!.readAll();
     }
 
     async write(buf: string | Buffer) {
-        this.res.end(buf);
+        this.writable.write(buf);
+    }
+
+    async end() {
+        this.writable.end();
     }
 }
 
@@ -65,36 +63,30 @@ export class HTTPServerTransport implements IServerTransport {
 
 
 export class HttpClient implements ITransport {
-    private req: Writable;
-    private res?: Readable = void 0;
+    private writable: Writable;
+    private streamReader?: StreamReader;
     private ready: Ready;
 
     constructor(target: string) {
         this.ready = new Ready();
-        this.req = http.request('http://' + target, {
-            method: 'post'
+        this.writable = http.request('http://' + target, {
+            method: 'post',
         }, (res) => {
-            this.res = res;
+            this.streamReader = new StreamReader(res);
             this.ready.ready();
         });
     }
 
-    async read() {
-        await this.ready.wait();
-        return new Promise((resolve) => {
-            let chunks: Buffer[] = [];
-
-            this.res!.on('data', (c) => {
-                chunks.push(c);
-            });
-    
-            this.res!.on('end', () => {
-                resolve(Buffer.concat(chunks));
-            });
-        })
+    async readAll() {
+        await this.ready.waitReady();
+        return this.streamReader!.readAll();
     }
 
     async write(buf: string | Buffer) {
-        this.req.end(buf);
+        this.writable.write(buf);
+    }
+
+    async end() {
+        this.writable.end();
     }
 }

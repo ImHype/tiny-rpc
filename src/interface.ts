@@ -1,7 +1,13 @@
+export interface IMessage {
+    name: string;
+    type: string;
+    seqid: number;
+}
 
 export interface ITransport {
-    read(): Promise<any>;
+    readAll(): Promise<Buffer>;
     write(argv: string | Buffer): Promise<any>;
+    end(): void;
 }
 
 export type IClientTransportClass = {new(target: string): ITransport}
