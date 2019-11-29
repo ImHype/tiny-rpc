@@ -22,6 +22,6 @@ export interface IHandler {
     handle(a: any): any;
 }
 
-export type ITransportValue = 'http' | ITransport
+export type ITransportValue = 'http' | ITransport;
 
-export type IServerIMPL = Map<string, IHandler>
+export type IServerIMPL = Map<string, IHandler>;

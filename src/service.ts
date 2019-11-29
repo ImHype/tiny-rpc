@@ -19,7 +19,6 @@ export class Service implements IService {
         }
 
         const serverImpl = new Map<string, Handler>();
-        // const serverImpl = new ServerImpl
 
         Object.entries(impl).forEach(([k, v]) => {
             serverImpl.set(k, new Handler(v));

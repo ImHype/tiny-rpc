@@ -1,4 +1,4 @@
-import { createClient } from "../../src/client";
+import { createClient } from "../../src";
 import { service } from "./service";
 
 

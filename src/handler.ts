@@ -1,12 +1,15 @@
 import { IHandler } from "./interface";
 
+type HanlderFunction = (req: any) => any;
+
 export class Handler implements IHandler {
-    private _handle: any;
-    constructor(v: any) {
+    private _handle: HanlderFunction;
+
+    constructor(v: HanlderFunction) {
         this._handle = v;
     }
 
-    public handle(a: any) {
-        return this._handle(a);
+    public handle(request: any) {
+        return this._handle(request);
     }
 }

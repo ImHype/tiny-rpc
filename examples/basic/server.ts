@@ -1,4 +1,4 @@
-import { createServer } from "../../src/server";
+import { createServer } from "../../src";
 import { service } from "./service";
 
 async function main() {
