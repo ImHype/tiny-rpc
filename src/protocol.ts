@@ -37,7 +37,7 @@ export class JSONProtocol implements IProtocol {
     }
 
     async writeMessageBegin(msg: IMessage) {
-        this.trans.write(`{"name":"${msg.name}","type":"${msg.type}","seqid":"${msg.seqid}","data":`);
+        this.trans.write(`{"name":"${msg.name}","type":"${msg.type}","seqId":"${msg.seqId}","data":`);
     }
 
     async writeMessageEnd(data: any) {

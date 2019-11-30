@@ -12,7 +12,7 @@ export class Processer implements IProcesser {
     }
 
     async process(t: IProtocol) {
-        const { name, seqid } = await t.readMessageBegin();
+        const { name, seqId } = await t.readMessageBegin();
         if (this.impl.has(name)) {
             const handler = this.impl.get(name)!;
             const data = await t.readMessageEnd();
@@ -20,14 +20,14 @@ export class Processer implements IProcesser {
 
             await t.writeMessageBegin({
                 name,
-                seqid,
+                seqId,
                 type: 'reply'
             });
             return t.writeMessageEnd(resp);
         } else {
             t.writeMessageBegin({
                 name,
-                seqid,
+                seqId,
                 type: 'exception'
             });
             return t.writeMessageEnd({

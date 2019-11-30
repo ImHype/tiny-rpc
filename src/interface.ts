@@ -1,7 +1,7 @@
 export interface IMessage {
     name: string;
     type: string;
-    seqid: number;
+    seqId: number;
 }
 
 export interface ITransport {

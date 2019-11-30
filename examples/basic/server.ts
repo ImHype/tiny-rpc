@@ -10,10 +10,11 @@ async function main() {
                     status: '200'
                 }
             }
-        }
+        },
+        port: 9090
     });
 
-    server.serve(9090);
+    server.serve();
 }
 
 main().catch(console.error);

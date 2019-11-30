@@ -1,58 +1,70 @@
 import { IService } from "./service";
-import { ITransportValue, ITransport, IClientTransportClass } from "./interface";
-import { HTTPTransport, HttpClient } from "./transports";
+import { ITransport, IClientTransportClass } from "./interface";
+import { HttpClient } from "./transports";
 import { IProtocol, JSONProtocol } from "./protocol";
+import assert from 'assert';
 
 interface IClient {
     callMethod(method: string, argv: any[]): Promise<any>
 }
 
 interface IClientOptions {
-    transport?: 'http' | ITransportValue;
+    transport?: 'http';
+    protocol?: 'json';
     target: string
 }
 
+class Increaser {
+    private id = 0;
+
+    increase() {
+        this.id++;
+    }
+
+    get() {
+        return this.id;
+    }
+}
+
 class Client implements IClient {
+    private increaser: Increaser = new Increaser();
     private service: IService;
     private target: string;
     private Transport: IClientTransportClass;
     private Proctocol: {new(trans: ITransport): IProtocol};
-    private seqid = 0;
     
     constructor(service: IService, options: IClientOptions) {
+        const { transport = 'http', protocol = 'json' } = options;
         this.service = service;
         this.target = options.target;
+
+        assert(transport === 'http');
         this.Transport = HttpClient;
+
+        assert(protocol === 'json');
         this.Proctocol = JSONProtocol;
     }
 
-    increaseSeqId() {
-        this.seqid++;
-    }
-
-    getSeqId() {
-        return this.seqid;
-    }
 
     async callMethod(method: string, body: any) {
         const transport = new this.Transport(this.target);
         const protol = new this.Proctocol(transport);
-        const seqid = this.getSeqId();
 
-        this.increaseSeqId();
+        const seqId = this.increaser.get();
+        this.increaser.increase();
 
         await protol.writeMessageBegin({
             name: method,
-            seqid,
+            seqId,
             type: 'request'
         });
 
         await protol.writeMessageEnd(body);
 
-        const { name, seqid: resSeqId, type } = await protol.readMessageBegin();
+        const { name, seqId: recievedSeqId, type } = await protol.readMessageBegin();
 
-        if (Number(resSeqId) !== seqid) {
-            throw new Error(`expected seqid ${seqid}, actually ${resSeqId}`);
+        if (Number(recievedSeqId) !== seqId) {
+            throw new Error(`expected seqId ${seqId}, actually ${recievedSeqId}`);
         }
 
         if (name != method) {
