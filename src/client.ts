@@ -5,7 +5,7 @@ import { IProtocol, JSONProtocol } from "./protocol";
 import assert from 'assert';
 
 interface IClient {
-    callMethod(method: string, argv: any[]): Promise<any>
+    callMethod<ReqType, ResType>(method: string, req: ReqType): Promise<ResType>
 }
 
 interface IClientOptions {
@@ -46,7 +46,7 @@ class Client implements IClient {
     }
 
 
-    async callMethod(method: string, body: any) {
+    async callMethod<ReqType, ResType>(method: string, body: ReqType): Promise<ResType> {
         const transport = new this.Transport(this.target);
         const protol = new this.Proctocol(transport);
 
@@ -59,25 +59,25 @@ class Client implements IClient {
             type: 'request'
         });
 
-        await protol.writeMessageEnd(body);
+        await protol.writeMessageEnd<ReqType>(body);
 
-        const { name, seqId: recievedSeqId, type } = await protol.readMessageBegin();
+        const head = await protol.readMessageBegin();
 
-        if (Number(recievedSeqId) !== seqId) {
-            throw new Error(`expected seqId ${seqId}, actually ${recievedSeqId}`);
+        if (Number(head.seqId) !== seqId) {
+            throw new Error(`expected seqId ${seqId}, actually ${head.seqId}`);
         }
 
-        if (name != method) {
+        if (head.name != method) {
             throw new Error(`expected method ${method}, actually ${name}`);
         }
 
-        const data = await protol.readMessageEnd();
+        const data = await protol.readMessageEnd<ResType>();
 
-        if (type === 'exception') {
+        if (head.type === 'exception') {
             throw new Error(data.message);
         }
 
-        return data;
+        return data.body;
     }
 }
 

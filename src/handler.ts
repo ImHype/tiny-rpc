@@ -1,15 +1,15 @@
 import { IHandler } from "./interface";
 
-type HanlderFunction = (req: any) => any;
+type HanlderFunction<ReqType, ResType> = (req: ReqType) => ResType;
 
-export class Handler implements IHandler {
-    private _handle: HanlderFunction;
+export class Handler<ReqType, ResType> implements IHandler<ReqType, ResType> {
+    private _handle: HanlderFunction<ReqType, ResType>;
 
-    constructor(v: HanlderFunction) {
+    constructor(v: HanlderFunction<ReqType, ResType>) {
         this._handle = v;
     }
 
-    public handle(request: any) {
+    public async handle(request: ReqType): Promise<ResType> {
         return this._handle(request);
     }
 }

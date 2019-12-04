@@ -1,5 +1,7 @@
+type Resolve = () => void;
+
 export class Ready {
-    private queue: any[];
+    private queue: Resolve[];
     private isReady: boolean;
 
     constructor() {
@@ -9,14 +11,15 @@ export class Ready {
 
     waitReady() {
         if (this.isReady) return;
-        return new Promise((resolve) => {
+        return new Promise<Resolve>((resolve) => {
             this.queue.push(resolve);
         })
     }
 
     ready() {
         this.isReady = true;
-        let it: any;
+        let it: Resolve | undefined;
+
         while(it = this.queue.pop()) {
             it();
         }

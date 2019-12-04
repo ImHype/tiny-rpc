@@ -1,3 +1,5 @@
+import { Handler } from "./handler";
+
 export interface IMessage {
     name: string;
     type: string;
@@ -6,7 +8,7 @@ export interface IMessage {
 
 export interface ITransport {
     readAll(): Promise<Buffer>;
-    write(argv: string | Buffer): Promise<any>;
+    write(argv: string | Buffer): Promise<void>;
     end(): void;
 }
 
@@ -17,11 +19,18 @@ export interface IServerTransport {
     accept: () => Promise<ITransport>
 }
 
-
-export interface IHandler {
-    handle(a: any): any;
+export interface IHandler<ReqType, ResType> {
+    handle(req: ReqType): Promise<ResType>;
 }
 
 export type ITransportValue = 'http' | ITransport;
 
-export type IServerIMPL = Map<string, IHandler>;
+export type MethodLike = (req: any) => any;
+
+export type IServerIMPL<T> = {
+    [K in keyof T]: T[K] extends MethodLike ? Handler<Parameters<T[K]>[0], T[K]> : never
+};
+
+export interface ServiceLike {
+    [k : string]: MethodLike
+}

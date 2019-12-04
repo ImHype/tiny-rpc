@@ -1,8 +1,8 @@
-import { IServerIMPL } from "./interface";
+import { IServerIMPL, ServiceLike } from "./interface";
 import { Handler } from "./handler";
 
 export interface IService {
-
+    impl<IMPL extends ServiceLike>(impl: IMPL): IServerIMPL<IMPL>;
 }
 
 export class Service implements IService {
@@ -13,16 +13,18 @@ export class Service implements IService {
         this.service = service;
     }
 
-    impl(impl: object): IServerIMPL {
+    impl<IMPL extends ServiceLike>(impl: IMPL): IServerIMPL<IMPL> {
+        
         if (!impl) {
             throw new Error('empty impl');
         }
 
-        const serverImpl = new Map<string, Handler>();
-
-        Object.entries(impl).forEach(([k, v]) => {
-            serverImpl.set(k, new Handler(v));
-        });
+        const serverImpl = Object.entries(impl).reduce((p, [k, v]) => {
+            return {
+                ...p,
+                [k]: new Handler(v)
+            }
+        }, {} as IServerIMPL<IMPL>);
 
         return serverImpl;
     }

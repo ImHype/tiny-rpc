@@ -8,11 +8,15 @@ async function main() {
         target: '127.0.0.1:9090'
     });
 
-    const resp = await client.callMethod('sayHello', {
+    const resp = await client.callMethod<{
+        name: string
+    }, {
+        status: string
+    }>('sayHello', {
         name: 'my-name'
     });
 
-    console.log(resp);
+    console.log(resp.status);
 }
 
 main().catch(console.error);

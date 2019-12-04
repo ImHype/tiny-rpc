@@ -1,46 +1,58 @@
 import { ITransport, IMessage } from "./interface";
 
+
+export interface MessageHead {
+    type: 'exception' | 'reply' | 'request';
+    message: string;
+    seqId: number;
+    name: string;
+}
+
+export interface Message<T> extends MessageHead {
+    body: T;
+}
+
 export interface IProtocol {
-    readMessageBegin(): Promise<IMessage>;
-    readMessageEnd(): Promise<any>;
+    readMessageBegin(): Promise<MessageHead>;
+    readMessageEnd<ReadType>(): Promise<Message<ReadType>>;
 
     writeMessageBegin(msg: IMessage): Promise<void>;
-    writeMessageEnd(data: any): Promise<void>;
-
-    decode(): Promise<any>;
+    writeMessageEnd<WriteType>(data: WriteType): Promise<void>;
 }
+
+type TransData = Message<any>;
 
 export class JSONProtocol implements IProtocol {
     protected trans: ITransport;
-    protected result: any;
+    protected result: TransData | null;
 
     constructor(trans: ITransport)  {
         this.trans = trans;
         this.result = null;
     }
 
-    async decode() {
+    async decode(): Promise<TransData> {
         if (!this.result) {
             const buf = await this.trans.readAll();
             this.result = JSON.parse(buf.toString());
         }
-
-        return this.result;
+        
+        return this.result!;
     }
 
-    async readMessageBegin() {
+    async readMessageBegin(): Promise<MessageHead> {
         return await this.decode();
     }
 
-    async readMessageEnd() {
-        return this.result.data;
+    async readMessageEnd<ReadType>(): Promise<Message<ReadType>> {
+        return await this.decode();
     }
 
     async writeMessageBegin(msg: IMessage) {
-        this.trans.write(`{"name":"${msg.name}","type":"${msg.type}","seqId":"${msg.seqId}","data":`);
+        this.trans.write(`{"name":"${msg.name}","type":"${msg.type}","seqId":"${msg.seqId}","body":`);
     }
 
-    async writeMessageEnd(data: any) {
+    async writeMessageEnd<WriteType>(data: WriteType) {
         this.trans.write(`${JSON.stringify(data)}}`);
         this.trans.end();
     }
