@@ -9,8 +9,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "node ./examples/server.js",
-    "client": "node ./examples/client.js"
+    "start": "ts-node ./examples/basic/server",
+    "client": "ts-node ./examples/basic/client"
   },
   "devDependencies": {
     "typescript": "^3.7.2"

@@ -16,7 +16,7 @@ async function main() {
         name: 'my-name'
     });
 
-    console.log(resp.status);
+    console.log(resp);
 }
 
 main().catch(console.error);

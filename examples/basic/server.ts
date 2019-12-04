@@ -4,7 +4,11 @@ import { service } from "./service";
 async function main() {
     const server = createServer(service, {
         impl: {
-            sayHello(helloRequest: any) {
+            sayHello(helloRequest: {
+                name: string
+            }): {
+                status: string
+            } {
                 console.log('helloRequest:', helloRequest)
                 return {
                     status: '200'
