@@ -24,20 +24,20 @@ type TransData = Message<any>;
 
 export class JSONProtocol implements IProtocol {
     protected trans: ITransport;
-    protected result: TransData | null;
+    protected buffer: TransData | null;
 
     constructor(trans: ITransport)  {
         this.trans = trans;
-        this.result = null;
+        this.buffer = null;
     }
 
     async decode(): Promise<TransData> {
-        if (!this.result) {
+        if (!this.buffer) {
             const buf = await this.trans.readAll();
-            this.result = JSON.parse(buf.toString());
+            this.buffer = JSON.parse(buf.toString());
         }
         
-        return this.result!;
+        return this.buffer!;
     }
 
     async readMessageBegin(): Promise<MessageHead> {
