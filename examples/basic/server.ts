@@ -1,5 +1,5 @@
 import { createServer } from "../../src";
-import { service } from "./service";
+import { service } from "./interface";
 
 async function main() {
     const server = createServer(service, {

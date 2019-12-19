@@ -1,5 +1,5 @@
 import { createClient } from "../../src";
-import { service } from "./service";
+import { service } from "./interface";
 
 
 async function main() {
