@@ -4,7 +4,6 @@ import { service } from "./interface";
 
 async function main() {
     const client = createClient(service, {
-        transport: 'http',
         target: '127.0.0.1:9090'
     });
 
