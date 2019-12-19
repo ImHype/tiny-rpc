@@ -7,11 +7,11 @@ async function main() {
             sayHello(helloRequest: {
                 name: string
             }): {
-                status: string
+                data: string
             } {
                 console.log('helloRequest:', helloRequest)
                 return {
-                    status: '200'
+                    data: 'hello, ' + helloRequest.name
                 }
             }
         },

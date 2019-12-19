@@ -13,7 +13,7 @@ async function main() {
     }, {
         status: string
     }>('sayHello', {
-        name: 'my-name'
+        name: 'joey'
     });
 
     console.log(resp);

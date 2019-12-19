@@ -17,7 +17,7 @@ export class Processer<IMPL extends ServiceLike> implements IProcesser {
         if (this.impl[name]) {
             const handler = this.impl[name];
             const data = await t.readMessageEnd();
-            const resp = await handler.handle(data);
+            const resp = await handler.handle(data.body);
 
             await t.writeMessageBegin({
                 name,
