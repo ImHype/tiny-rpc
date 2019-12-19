@@ -44,7 +44,7 @@ export class HTTPServerTransport implements IServerTransport {
             }
         });
         server.listen(port, () => {
-            console.log('listened: http://127.0.0.1:%s', port);
+            console.log('listen: %o', server.address());
         });
     }
 
